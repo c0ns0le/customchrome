@@ -5,6 +5,7 @@ activeExtensions = [],
 inactiveExtensions = [],
 btnId,
 idList = [],
+testArray = ("0,1,2,3,4,5,6,7,8,9,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z, ").split(',');
 
 // Handlebars for active and inactive lists
 source   = $("#entry-template").html(),
@@ -131,7 +132,39 @@ $(document).ready(function(){
 // 	$('.tooltipped').tooltip();
 // }, 1000)
 
+	$("#name").keyup(function(){
+		//with each keyup
+			//test the last character to see if it's bad
+				//show alert toast if bad character found
+			//test the length of the string
+				//if it's greater than 15, show alert
+				//if it's less than
+
+		//get the string length
+
+		
+
+		var blerg = $('#name').val()
+		var l = blerg.length;
+		var lastChar = blerg[l-1];
+		console.log('lastChar', lastChar);
+
+		if(l > 15){
+			//no characters in profile name
+			Materialize.toast("Name cannot exceed 15 characters", 2000, 'alert');
+		} else {
+			if ($.inArray(lastChar, testArray) === -1){
+			//lastchar is a forbidden character
+			Materialize.toast("Name cannot contain special characters", 2000, 'alert');
+		}
+		}
+
+		
+
+	})
+
 }); // close $(document).ready
+
 
 
 
@@ -204,7 +237,21 @@ $('#nameSubmit').submit(
 		e.preventDefault();
 
 		name = $('#name').val().toLowerCase(); // catch the profile name the user entered
-		
+
+		//check if value is empty
+
+		if(name === ''){
+			//name is empty, prompt user
+			Materialize.toast("Name must have at least one character", 2000, 'alert');
+			return
+		} 
+
+		//check to see if name only contains spaces
+		if((jQuery.trim(name)).length==0){
+			Materialize.toast("Name must have at least one character", 2000, 'alert');
+			return
+		}
+
 		chrome.storage.sync.get(function(obj){
 			if ($.inArray(name, Object.keys(obj)) != -1){
 				Materialize.toast('Profile name already exists!', 2000, 'alert');
@@ -405,6 +452,8 @@ $("body").on("click",".edit",function(){
 	var profile = $(this).parent().attr('profile');
 	console.log('user is editing: ',profile);
 
+	profileName = profile;
+
 	//close the current modal, and clear out the profilesList
 	$('#editProfiles').closeModal();
 	$('#profileList').html('');
@@ -493,6 +542,7 @@ $("#editExtSubmit").submit(
 					console.log('deleting old profile, '+profileName);
 					chrome.storage.sync.remove(profileName, function(){
 						Materialize.toast(name+' profile successfully edited', 1000, 'ccToastOn');
+						$('#editExts').closeModal(); //close the modal
 						setTimeout(function(){
 							location.reload(false);
 
