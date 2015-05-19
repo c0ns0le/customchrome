@@ -1,5 +1,4 @@
  ToDo For Release v1:
- ☐ for profile naming give user feedback when they use too few/many characters or restricted characters
 
 
 Issues that can wait:
@@ -8,6 +7,7 @@ Issues that can wait:
  ☐ display profile tooltips vertically (have tried <br> "\n" "&lt;br /&gt;" "&#013;")
  ☐ Change search icon colour on when focusing on search input and move search icon into the input area
  ☐ change forEach to something that returns when a match is found when we're only looking for one possible match
+ ☐ hide custom chrome from all extension lists
 
 
 Future Features:

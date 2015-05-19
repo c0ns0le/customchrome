@@ -5,7 +5,8 @@ activeExtensions = [],
 inactiveExtensions = [],
 btnId,
 idList = [],
-testArray = ("0,1,2,3,4,5,6,7,8,9,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z, ").split(',');
+lastVal,
+testArray = ("0,1,2,3,4,5,6,7,8,9,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z, ").split(',');
 
 // Handlebars for active and inactive lists
 source   = $("#entry-template").html(),
@@ -69,33 +70,23 @@ $(document).ready(function(){
 // }, 1000)
 
 	$("#name").keyup(function(){
-		//with each keyup
-			//test the last character to see if it's bad
-				//show alert toast if bad character found
-			//test the length of the string
-				//if it's greater than 15, show alert
-				//if it's less than
-
-		//get the string length
-
-		
-
-		var blerg = $('#name').val()
-		var l = blerg.length;
-		var lastChar = blerg[l-1];
-		console.log('lastChar', lastChar);
-
-		if(l > 15){
-			//no characters in profile name
-			Materialize.toast("Name cannot exceed 15 characters", 2000, 'alert');
-		} else {
-			if ($.inArray(lastChar, testArray) === -1){
-			//lastchar is a forbidden character
-			Materialize.toast("Name cannot contain special characters", 2000, 'alert');
+		// get the value of the name after every key stroke
+		var blerg = $('#name').val();
+		// check if the last character entered is allowed
+		if ($.inArray(blerg[l-1], testArray) === -1){
+			// if the latest user key stroke changes the value of input issue the alert again
+			if (lastVal != blerg) {
+			Materialize.toast("Name cannot contain special characters", 3000, 'alert');
+			}
+			// stop the user from entering any more characters
+			$('#name').attr("maxlength", blerg.length);
+			// store the current input value (to compare against the one after the next key stroke)
+			lastVal = blerg;
 		}
+		else {
+			// normal maxlength is 15 characters
+			$('#name').attr("maxlength", 15);
 		}
-
-		
 
 	})
 
@@ -201,7 +192,7 @@ $("body").on("click",".profile-btn",function(){ // if a profile btn is clicked
 	setTimeout(function(){
 		//location.reload(false); // adding false lets the page reload from the cache
 		refresh();
-	}, 1000)
+	}, 200)
 	}
 
 	else if ($(this).hasClass("off")) { // if the btn is currently off then turn all extensions on
@@ -219,7 +210,7 @@ $("body").on("click",".profile-btn",function(){ // if a profile btn is clicked
 	setTimeout(function(){
 		//location.reload(false); // adding false lets the page reload from the cache
 		refresh();
-	}, 1000)
+	}, 200)
 	}
 
 })
@@ -417,7 +408,7 @@ $("body").on("click","#removeAllBtn",function(){ // remove all profiles
 	setTimeout(function(){
 		//location.reload(false); // adding false lets the page reload from the cache
 		refresh();
-	}, 1000)
+	}, 200)
 })
 
 
@@ -436,7 +427,7 @@ $("body").on("click",".delete",function(){
 })
 
 
-var confirmDelete = function(profile){
+function confirmDelete(profile){
 	//function for confirming profile delete
 
 	//open the modal and insert the profile name into the first p element
@@ -459,7 +450,7 @@ var confirmDelete = function(profile){
 		setTimeout(function(){
 			//location.reload(false);
 			refresh();
-		}, 1000)
+		}, 200)
 	})
 }
 
@@ -582,6 +573,17 @@ $("#editExtSubmit").submit(
 )
 
 
+function refresh(){
+	$('#loader').fadeIn(function(){
+		getProfiles();
+		getExtensions();
+	});
+	setTimeout(function(){
+		$('#loader').fadeOut();
+		}, 700)
+}
+
+
 // GOOGLE ANALYTICS
 
 // Write a function that sends click events to Google Analytics:
@@ -622,34 +624,6 @@ for (var i = 0; i < buttons.length; i++) {
 // 		})
 // 	})
 // }
-
-
-//function to remove reload
-
-//on 'reload'
-//fadeinloading overlay with spinning cog
-//run get profiles
-//run get extensions
-//fadeout overlay
-
-var refresh = function(){
-	$('#loader').fadeIn(function(){
-		getProfiles();
-		getExtensions();
-	});
-	setTimeout(function(){
-		$('#loader').fadeOut();
-		}, 500)
-}
-
-
-
-
-
-
-
-
-
 
 
 
