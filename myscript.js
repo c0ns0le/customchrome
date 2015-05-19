@@ -24,74 +24,10 @@ $(document).ready(function(){
 
 	getProfiles(); // call function to check storage.sync for existing user profiles
 
+	getExtensions(); //call function to get extensions
+
 	$('.modal-trigger').leanModal();
 	$('#addProfileBox').hide();
-
-	chrome.management.getAll(function(info) {
-		// info is a list of all user installed apps, extensions etc push extensions to extArray
-		info.forEach(function(entry) {
-			if(entry.type === "extension"){
-				extArray.push(entry);
-			}
-		})
-
-		// Sort extArray in alphabetical order based on the extension's name
-		extArray.sort(function(a, b) {
-			return a.name.localeCompare(b.name);
-		});
-
-		extArray.forEach(function(entry) {
-			// extension icons are stored in entry.icons, but not all extensions have icons
-			if (entry.icons === undefined) {
-				imgsrc = 'icon-128.png'  // if there aren't any icons, set a default
-			} else {
-				// if there is an array of icons, we want the highest res one (which is the last one in the array) so get the array length (-1) to get the last icon then set that item's url as our app icon url
-				imgsrc = entry.icons[entry.icons.length-1].url;
-			}
-			entry.pic = imgsrc; // setting the url we got earlier as entry.pic
-
-			var state = entry.enabled;
-			if(state === true){ // set switches to either on or off
-				state = "checked"
-			} else {
-				state = ""
-			}
-			entry.stringEnabled = state;
-
-			// divide the extensions into two separate lists of active (enabled = true) and inactive (enabled = off) and output them into the appropriate HTML div
-			if (entry.enabled) {
-				$('#activeExtensions').append(template(entry));
-			} else {
-				$('#inactiveExtensions').append(template(entry));
-			}
-		}); // close extArray.forEach
-
-		extStateListener(); // run the function which listens for a change in a checkbox state
-
-		chrome.storage.sync.get(function(obj){
-			// setting the profile buttons to on/off appearance
-			var sizeOfStoredObject = Object.keys(obj).length;
-			for (var n = 0; n < sizeOfStoredObject; n++) { // cycle through the profilesHolder
-				for (key in obj) { // cycle through the extension profiles
-					keyUs = key.split(' ').join('_');
-					$("#" + keyUs).addClass("on").removeClass("off");
-					for (var n = 0; n < obj[key].length; n++) { // cycle through the extensions within the profile
-						for (var i=0;i<extArray.length;i++) {
-							if (extArray[i]["id"] === obj[key][n]) {
-								if (extArray[i]["enabled"] === false) {
-									$("#" + keyUs).removeClass("on").addClass("off");
-								}
-							}
-						}
-					}
-				}
-			}
-		}) // close chrome.storage.sync.get
-
-		$(".extId").hide(); // just here to reference each individual ext
-		$(".extState").hide(); // just here to reference each individual ext's state
-
-	}); // close chrome.management.getAll
 
 	// Search
 	$("#searchbox").keyup(function(){
@@ -165,7 +101,83 @@ $(document).ready(function(){
 
 }); // close $(document).ready
 
+var getExtensions = function(){
 
+	//clear all extensions from cards
+	$('.extBlock').remove();
+
+	//clearing the global variables
+	extArray=[];
+	activeExtensions = [];
+	inactiveExtensions = [];
+	idList = [];
+
+	chrome.management.getAll(function(info) {
+		// info is a list of all user installed apps, extensions etc push extensions to extArray
+		info.forEach(function(entry) {
+			if(entry.type === "extension"){
+				extArray.push(entry);
+			}
+		})
+
+		// Sort extArray in alphabetical order based on the extension's name
+		extArray.sort(function(a, b) {
+			return a.name.localeCompare(b.name);
+		});
+
+		extArray.forEach(function(entry) {
+			// extension icons are stored in entry.icons, but not all extensions have icons
+			if (entry.icons === undefined) {
+				imgsrc = 'icon-128.png'  // if there aren't any icons, set a default
+			} else {
+				// if there is an array of icons, we want the highest res one (which is the last one in the array) so get the array length (-1) to get the last icon then set that item's url as our app icon url
+				imgsrc = entry.icons[entry.icons.length-1].url;
+			}
+			entry.pic = imgsrc; // setting the url we got earlier as entry.pic
+
+			var state = entry.enabled;
+			if(state === true){ // set switches to either on or off
+				state = "checked"
+			} else {
+				state = ""
+			}
+			entry.stringEnabled = state;
+
+			// divide the extensions into two separate lists of active (enabled = true) and inactive (enabled = off) and output them into the appropriate HTML div
+			if (entry.enabled) {
+				$('#activeExtensions').append(template(entry));
+			} else {
+				$('#inactiveExtensions').append(template(entry));
+			}
+		}); // close extArray.forEach
+
+		extStateListener(); // run the function which listens for a change in a checkbox state
+
+		chrome.storage.sync.get(function(obj){
+			// setting the profile buttons to on/off appearance
+			var sizeOfStoredObject = Object.keys(obj).length;
+			for (var n = 0; n < sizeOfStoredObject; n++) { // cycle through the profilesHolder
+				for (key in obj) { // cycle through the extension profiles
+					keyUs = key.split(' ').join('_');
+					$("#" + keyUs).addClass("on").removeClass("off");
+					for (var n = 0; n < obj[key].length; n++) { // cycle through the extensions within the profile
+						for (var i=0;i<extArray.length;i++) {
+							if (extArray[i]["id"] === obj[key][n]) {
+								if (extArray[i]["enabled"] === false) {
+									$("#" + keyUs).removeClass("on").addClass("off");
+								}
+							}
+						}
+					}
+				}
+			}
+		}) // close chrome.storage.sync.get
+
+		$(".extId").hide(); // just here to reference each individual ext
+		$(".extState").hide(); // just here to reference each individual ext's state
+
+	}); // close chrome.management.getAll
+}
 
 
 // after clicking a profile button toggle it's appearance (on or off) and cycle through associated extensions turning them all on or off
@@ -187,7 +199,8 @@ $("body").on("click",".profile-btn",function(){ // if a profile btn is clicked
 		})
 	$(this).removeClass("on").addClass("off"); // change profile btn to "off" appearance
 	setTimeout(function(){
-		location.reload(false); // adding false lets the page reload from the cache
+		//location.reload(false); // adding false lets the page reload from the cache
+		refresh();
 	}, 1000)
 	}
 
@@ -204,7 +217,8 @@ $("body").on("click",".profile-btn",function(){ // if a profile btn is clicked
 		})
 	$(this).removeClass("off").addClass("on"); // change profile btn to "on" appearance
 	setTimeout(function(){
-		location.reload(false); // adding false lets the page reload from the cache
+		//location.reload(false); // adding false lets the page reload from the cache
+		refresh();
 	}, 1000)
 	}
 
@@ -352,6 +366,9 @@ function getProfiles() { // check storage for any profiles
 	chrome.storage.sync.get(function(obj){
 		var allKeys = Object.keys(obj);
 
+		//clear all buttons
+		$('.profile-btn').remove();
+
 		if ( allKeys.length === 0 ) { // if there are no profiles, exit function
 			$('#noProfilesText').show();
 			$('#profileHeader').css("background-color", "#03A9FA");
@@ -398,7 +415,8 @@ $("body").on("click","#removeAllBtn",function(){ // remove all profiles
 	chrome.storage.sync.clear()
 	Materialize.toast('Deleting your profiles...', 2000, 'deleteToast')
 	setTimeout(function(){
-		location.reload(false); // adding false lets the page reload from the cache
+		//location.reload(false); // adding false lets the page reload from the cache
+		refresh();
 	}, 1000)
 })
 
@@ -439,7 +457,8 @@ var confirmDelete = function(profile){
 		chrome.storage.sync.remove(profile);
 		Materialize.toast('Deleting ' + profile, 2000, 'deleteToast')
 		setTimeout(function(){
-			location.reload(false);
+			//location.reload(false);
+			refresh();
 		}, 1000)
 	})
 }
@@ -517,7 +536,8 @@ $("#editExtSubmit").submit(
 			chrome.storage.sync.remove(profileName, function(){
 				Materialize.toast(name+' profile successfully edited', 1000, 'ccToastOn');
 				setTimeout(function(){
-					location.reload(false);
+					//location.reload(false);
+					refresh();
 
 					//clear out the editExtList
 					$('#editExtList').html('');
@@ -544,7 +564,8 @@ $("#editExtSubmit").submit(
 						Materialize.toast(name+' profile successfully edited', 1000, 'ccToastOn');
 						$('#editExts').closeModal(); //close the modal
 						setTimeout(function(){
-							location.reload(false);
+							//location.reload(false);
+							refresh();
 
 							//clear out the editExtList
 							$('#editExtList').html('');
@@ -601,6 +622,35 @@ for (var i = 0; i < buttons.length; i++) {
 // 		})
 // 	})
 // }
+
+
+//function to remove reload
+
+//on 'reload'
+//fadeinloading overlay with spinning cog
+//run get profiles
+//run get extensions
+//fadeout overlay
+
+var refresh = function(){
+	$('#loader').fadeIn(function(){
+		getProfiles();
+		getExtensions();
+	});
+	setTimeout(function(){
+		$('#loader').fadeOut();
+		}, 500)
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
