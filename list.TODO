@@ -1,4 +1,5 @@
  ToDo For Release v1:
+ ☐ searchbox focus not working
 
 
 Issues that can wait:
@@ -15,6 +16,12 @@ Future Features:
  ☐ Advanced option to see memory usage of each extension (next to switch)
  ☐ Have an option to make sure certain extensions are off when using a profile e.g. turn off ad blockers and social blockers when using "Web Dev" profile but record their state before the change and re-instate it after profile is turned off
  ☐ Backup profiles so they can be restored if Custom Chrome is uninstalled
+ ☐ New views:
+ 1) Compact - extBlock (total height 50px; margin: '5px 25px'), smaller img, extName (font-size: 16px), extDescript (display:none), smaller switches
+ 2) Compact with desc - same as above but extension descriptions are displayed
+ ☐ Options Page (Material Design) - Chose of views
+ ☐ Add option to uninstall an extension
+ ☐ when searching if there are no results in either active or inactive but there are results in the other then hide the section with no results
 
 
 

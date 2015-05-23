@@ -1,5 +1,4 @@
 // Declare variables using 'var' once minifying the code
-
 var extArray = [],
 activeExtensions = [],
 inactiveExtensions = [],
@@ -14,7 +13,7 @@ template = Handlebars.compile(source),
 
 // Handlebars for extList (modal for adding extensions to profiles)
 extListSource   = $("#extList-template").html(),
-extListTemplate = Handlebars.compile(extListSource);
+extListTemplate = Handlebars.compile(extListSource),
 
 // Handlebars for profileList (modal for editing profiles)
 profileListSource   = $("#profileList-template").html(),
@@ -55,14 +54,11 @@ $(document).ready(function(){
 				$('#activeExtensions').parent().css('visibility','visible');
 				$('#inactiveExtensions').parent().css('visibility','visible');
 			}
-		}, 550)
+		}, 550);
 		
 	});
 
-	$('#searchbox').keyup(function(){
-		
-	})
-	$('.searchbox').focus();
+	$('#searchbox').focus();
 
 // tooltipGenerator();
 // setTimeout(function(){
@@ -88,7 +84,7 @@ $(document).ready(function(){
 			$('#name').attr("maxlength", 15);
 		}
 
-	})
+	});
 
 }); // close $(document).ready
 
@@ -109,7 +105,7 @@ var getExtensions = function(){
 			if(entry.type === "extension"){
 				extArray.push(entry);
 			}
-		})
+		});
 
 		// Sort extArray in alphabetical order based on the extension's name
 		extArray.sort(function(a, b) {
@@ -119,7 +115,7 @@ var getExtensions = function(){
 		extArray.forEach(function(entry) {
 			// extension icons are stored in entry.icons, but not all extensions have icons
 			if (entry.icons === undefined) {
-				imgsrc = 'icon-128.png'  // if there aren't any icons, set a default
+				imgsrc = 'icon-128.png';  // if there aren't any icons, set a default
 			} else {
 				// if there is an array of icons, we want the highest res one (which is the last one in the array) so get the array length (-1) to get the last icon then set that item's url as our app icon url
 				imgsrc = entry.icons[entry.icons.length-1].url;
@@ -128,9 +124,9 @@ var getExtensions = function(){
 
 			var state = entry.enabled;
 			if(state === true){ // set switches to either on or off
-				state = "checked"
+				state = "checked";
 			} else {
-				state = ""
+				state = "";
 			}
 			entry.stringEnabled = state;
 
@@ -162,13 +158,13 @@ var getExtensions = function(){
 					}
 				}
 			}
-		}) // close chrome.storage.sync.get
+		}); // close chrome.storage.sync.get
 
 		$(".extId").hide(); // just here to reference each individual ext
 		$(".extState").hide(); // just here to reference each individual ext's state
 
 	}); // close chrome.management.getAll
-}
+};
 
 
 // after clicking a profile button toggle it's appearance (on or off) and cycle through associated extensions turning them all on or off
@@ -182,17 +178,17 @@ $("body").on("click",".profile-btn",function(){ // if a profile btn is clicked
 			Object.keys(obj).forEach(function(key){
 				if (key === btnIdConvert) {
 					for (var i = 0; i < obj[btnIdConvert].length; i++) {
-						chrome.management.setEnabled(obj[btnIdConvert][i], false, function (){})
+						chrome.management.setEnabled(obj[btnIdConvert][i], false, function (){});
 					}
 				}
-			})
-			Materialize.toast(btnIdConvert+' is now off', 2000, 'ccToastOff')
-		})
+			});
+			Materialize.toast(btnIdConvert+' is now off', 2000, 'ccToastOff');
+		});
 	$(this).removeClass("on").addClass("off"); // change profile btn to "off" appearance
 	setTimeout(function(){
 		//location.reload(false); // adding false lets the page reload from the cache
 		refresh();
-	}, 200)
+	}, 200);
 	}
 
 	else if ($(this).hasClass("off")) { // if the btn is currently off then turn all extensions on
@@ -200,20 +196,20 @@ $("body").on("click",".profile-btn",function(){ // if a profile btn is clicked
 			Object.keys(obj).forEach(function(key){
 				if (key === btnIdConvert) {
 					for (var i = 0; i < obj[btnIdConvert].length; i++) {
-						chrome.management.setEnabled(obj[btnIdConvert][i], true, function (){})
+						chrome.management.setEnabled(obj[btnIdConvert][i], true, function (){});
 					}
 				}
-			})
-			Materialize.toast(btnIdConvert+' is now on', 2000, 'ccToastOn')
-		})
+			});
+			Materialize.toast(btnIdConvert+' is now on', 2000, 'ccToastOn');
+		});
 	$(this).removeClass("off").addClass("on"); // change profile btn to "on" appearance
 	setTimeout(function(){
 		//location.reload(false); // adding false lets the page reload from the cache
 		refresh();
-	}, 200)
+	}, 200);
 	}
 
-})
+});
 
 function extStateListener() { // turn on/off extensions when toggle is switched
 	$('.js-switch').change(function(){
@@ -228,7 +224,7 @@ function extStateListener() { // turn on/off extensions when toggle is switched
 				Materialize.toast(name+' is now off', 2000, 'ccToastOff');
 			});
 		}
-	})
+	});
 }
 
 // listen for addProfile button press, add a button to HTML, prompt for profile name, set that name as button text, add that profile to the storage.sync object
@@ -243,18 +239,10 @@ $('#nameSubmit').submit(
 
 		name = $('#name').val().toLowerCase(); // catch the profile name the user entered
 
-		//check if value is empty
-
-		if(name === ''){
-			//name is empty, prompt user
+		//check to see if name only contains spaces or is empty
+		if((jQuery.trim(name)).length===0){
 			Materialize.toast("Name must have at least one character", 2000, 'alert');
-			return
-		} 
-
-		//check to see if name only contains spaces
-		if((jQuery.trim(name)).length==0){
-			Materialize.toast("Name must have at least one character", 2000, 'alert');
-			return
+			return;
 		}
 
 		chrome.storage.sync.get(function(obj){
@@ -262,22 +250,22 @@ $('#nameSubmit').submit(
 				Materialize.toast('Profile name already exists!', 2000, 'alert');
 				return;
 			} else {
-				// profilename doesn't exists yet, proceed with selecting extensions for the new profile 
+				// profilename doesn't exist yet, proceed with selecting extensions for the new profile 
 				$('#profilePrompt').closeModal();
 				// after half a second open the modal, user can specify what extensions to add to profile
 				setTimeout(function(){
 						addExtensions(name);
-				}, 500) 
+				}, 500);
 			}
-		})
+		});
 	}
-)
+);
 
 function addExtensions(name) { // add extensions to new profile modal
 	$('#addExts').openModal({
 		dismissible: false,
 		ready: function() {
-			checkboxlistener(name)
+			checkboxlistener(name);
 		}
 	});
 
@@ -285,7 +273,7 @@ function addExtensions(name) { // add extensions to new profile modal
 	$('#addExts h4').text(a + name); // change H4 text to say "add extensions to [profile name]"
 	extArray.forEach(function(ext){ // loop over extArray to populate the list
 		$('#extList').append(extListTemplate(ext));
-	})
+	});
 }
 
 function checkboxlistener() { // turn on/off extensions when toggle is switched
@@ -298,7 +286,7 @@ function checkboxlistener() { // turn on/off extensions when toggle is switched
 		}
 		idList.push(id);
 		console.log('idList is now ',idList);
-	})
+	});
 }
 
 $('#extSubmit').submit(
@@ -316,14 +304,14 @@ $('#extSubmit').submit(
 		$('#addExts').closeModal(); //close the modal
 		}
 	}
-)
+);
 
 function submitThatShit() {
 	tempObj = {};
 	tempObj[name] = idList;
 	if (idList.length === 0) {
 		return;
-	};
+	}
 	chrome.storage.sync.set(tempObj, function () {
 	  console.log('Saved', name, idList);
 	  chrome.storage.sync.get(function(obj){
@@ -342,15 +330,14 @@ function submitThatShit() {
 			var btnHtml = "<button class='profile-btn off' id='"+name.split(' ').join('_')+"'>"+name+"</button>";
 			$('.profile-holder').append(btnHtml); // append new button with new profile name to profile-holder
 			$('#name').val(""); // set profile name to user-defined profile name
-	  })
+	  });
 	  idList = []; //emptying out idList so that extensions aren't added to future profiles
 
 		// tooltipGenerator();
 		// setTimeout(function(){
 		// 	$('.tooltipped').tooltip();
 		// }, 1000)
-
-	})
+	});
 }
 
 function getProfiles() { // check storage for any profiles
@@ -381,12 +368,26 @@ function getProfiles() { // check storage for any profiles
 			btnHtml = "<button class='profile-btn off' id='"+name.toLowerCase().split(' ').join('_')+"'>"+name+"</button>";
 			$('.profile-holder').append(btnHtml); // append to profile-holder
 		}
-	})
+	});
+	$('#searchbox').focus();
 }
+
+
+
+
+$("body").on("click",".thisBtn",function(){ // add a new profile box
+	hideDesc();
+});
+
+function hideDesc() {
+	// if this option is checked then hide else do nothing
+	$('.extDescription').addClass('display','none');
+}
+
 
 $("body").on("click","#addProfileBox",function(){ // add a new profile box
 	$('#profilePrompt').openModal();
-})
+});
 
 $("body").on("click","#editBtn",function(){ 
 	$('#editProfiles').openModal({
@@ -397,19 +398,18 @@ $("body").on("click","#editBtn",function(){
 	chrome.storage.sync.get(function(obj){
 		for (var i = 0; i < Object.keys(obj).length; i++) {
 			$('#profileList').append(profileListTemplate(Object.keys(obj)[i]));
-		};
-	})
-
-})
+		}
+	});
+});
 
 $("body").on("click","#removeAllBtn",function(){ // remove all profiles
-	chrome.storage.sync.clear()
-	Materialize.toast('Deleting your profiles...', 2000, 'deleteToast')
+	chrome.storage.sync.clear();
+	Materialize.toast('Deleting your profiles...', 2000, 'deleteToast');
 	setTimeout(function(){
 		//location.reload(false); // adding false lets the page reload from the cache
 		refresh();
-	}, 200)
-})
+	}, 200);
+});
 
 
 $("body").on("click",".delete",function(){
@@ -423,8 +423,8 @@ $("body").on("click",".delete",function(){
 	//wait half a second, open a new confirm/cancel modal
 	setTimeout(function(){
 		confirmDelete(profile);
-	}, 500)
-})
+	}, 500);
+});
 
 
 function confirmDelete(profile){
@@ -446,14 +446,13 @@ function confirmDelete(profile){
 		//delete the selected profile
 		console.log('trying to remove ',profile," from storage");
 		chrome.storage.sync.remove(profile);
-		Materialize.toast('Deleting ' + profile, 2000, 'deleteToast')
+		Materialize.toast('Deleting ' + profile, 2000, 'deleteToast');
 		setTimeout(function(){
 			//location.reload(false);
 			refresh();
-		}, 200)
-	})
+		}, 200);
+	});
 }
-
 
 
 var profileName;
@@ -474,7 +473,7 @@ $("body").on("click",".edit",function(){
 	//populate list with all extensions:
 	extArray.forEach(function(ext){ // loop over extArray to populate the list
 		$('#editExtList').append(extListTemplate(ext));
-	})
+	});
 
 	//get the profile form memory, and populate the idList with the resulting array
 	chrome.storage.sync.get(profile,function(obj){
@@ -489,7 +488,7 @@ $("body").on("click",".edit",function(){
 
 		//start listening for checkbox changes:
 		checkboxlistener();
-	})
+	});
 	
 
 	//save button adds profile to Storage. 
@@ -500,8 +499,8 @@ $("body").on("click",".edit",function(){
 		$('#editExts').openModal({
 			dismissible: false
 		});
-	}, 500)
-})
+	}, 500);
+});
 
 
 $("#editExtSubmit").submit(
@@ -527,20 +526,16 @@ $("#editExtSubmit").submit(
 			chrome.storage.sync.remove(profileName, function(){
 				Materialize.toast(name+' profile successfully edited', 1000, 'ccToastOn');
 				setTimeout(function(){
-					//location.reload(false);
 					refresh();
-
 					//clear out the editExtList
 					$('#editExtList').html('');
-
 					//set new profile in storage with idList as array
 					name = newName;
 					submitThatShit();
-				}, 1000)	
+				}, 1000);
 			});			
 			$('#editExts').closeModal(); //close the modal
-
-		} 
+		}
 
 		else {
 			//user has updated the profile name, check if profile with this new name already exists
@@ -555,22 +550,19 @@ $("#editExtSubmit").submit(
 						Materialize.toast(name+' profile successfully edited', 1000, 'ccToastOn');
 						$('#editExts').closeModal(); //close the modal
 						setTimeout(function(){
-							//location.reload(false);
 							refresh();
-
 							//clear out the editExtList
 							$('#editExtList').html('');
-
 							//set new profile in storage with idList as array
 							name = newName;
 							submitThatShit();
-						}, 1000)
+						}, 1000);
 					});
 				}
-			})
+			});
 		}
 	}
-)
+);
 
 
 function refresh(){
@@ -580,7 +572,7 @@ function refresh(){
 	});
 	setTimeout(function(){
 		$('#loader').fadeOut();
-		}, 700)
+		}, 700);
 }
 
 
@@ -589,7 +581,7 @@ function refresh(){
 // Write a function that sends click events to Google Analytics:
 function trackButtonClick(e) {
   _gaq.push(['_trackEvent', e.target.id, 'clicked']);
-};
+}
 
 // And use it as an event handler for each button's click:
 var buttons = document.querySelectorAll('button');
