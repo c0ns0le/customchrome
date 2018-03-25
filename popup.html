@@ -222,9 +222,9 @@
 <!-- Handlebar Template Start: active/inactive list -->
 <script id="entry-template" type="text/x-handlebars-template">
 	{{#if isApp}}
-		<div class="extBlock app">
+		<div class="extBlock app" data-extid={{id}}>
 	{{else}}
-		<div class="extBlock">
+		<div class="extBlock" data-extid={{id}}>
 	{{/if}}
 	<div class="lefty">
 	 	<div class="picHolder">
@@ -232,7 +232,8 @@
 	 	</div>
 	 	<div class="nameDesc">
 		 	<span class="extName" >{{ name }}</span>
-    	{{#if isApp}}<span class="new badge"></span>{{/if}}<br>
+    	{{#if isApp}}<span class="new badge"></span>{{/if}}
+      <div class="groupLabels"></div>
 		 	<span class="extDescription">{{ description }}</span>
 		</div>
 	</div>

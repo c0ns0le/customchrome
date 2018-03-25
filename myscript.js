@@ -486,14 +486,10 @@ function getUserData() {
 
 		handleGroupsClasses();
 
+		applyGroupLabels();
+
 	});
 }
-
-// Not needed, listening to .addProfile instead
-// $("body").on("click","#addProfileBox",function(){ // add a new group box
-// 	$('#groupPrompt').openModal();
-// });
-
 
 $("body").on("click",".editBtn",function(){
 	$('#editGroups').openModal({
@@ -831,6 +827,26 @@ function includeAppsListener() {
 $('#viewChangelog').click(()=>{
 	$('#changelogModal').openModal();
 });
+
+function applyGroupLabels(){
+	// for each group
+	// find each extension in that group in the UI
+	// apply a label to the list so users know what extensions are in where
+
+	// Loop over all groups in user.groups object
+	for (var i = Object.keys(user.groups).length - 1; i >= 0; i--) {
+		let group = Object.keys(user.groups)[i];
+
+		// Loop over all extensions in that group
+		for (var x = user.groups[group].length - 1; x >= 0; x--) {
+			let extension = user.groups[group][x];
+			// Find the extension in the UI
+			// Append a group-label element
+			$(`.extBlock[data-extid='${extension}'`).find('.groupLabels').append(`<span class="group-label orange lighten-1 text-grey darken-text-4">${group}</span>`)
+
+		}
+	}
+}
 
 
 /* 
